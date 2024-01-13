@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "800811783602",
+    "project_id": "recipe4u-839a0",
+    "storage_bucket": "recipe4u-839a0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800811783602:android:1c95fe0b1271aa2482c0ab",
+        "android_client_info": {
+          "package_name": "com.cc.recipe4u"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWpLmkXbPuCBiQ5IVuV9IECzNf6PBcMIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
