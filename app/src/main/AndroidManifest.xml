@@ -12,9 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Recipe4U"
         tools:targetApi="31">
-        <activity android:name=".SignupActivity">
-
-        </activity>
+        <activity android:name=".SignupActivity"></activity>
+        <activity android:name=".ProfileActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
