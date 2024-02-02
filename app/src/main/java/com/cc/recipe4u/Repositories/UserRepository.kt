@@ -3,7 +3,6 @@ package com.cc.recipe4u.Repositories
 import android.net.Uri
 import android.util.Log
 import com.cc.recipe4u.DataClass.User
-import com.cc.recipe4u.Objects.FileUtil
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
