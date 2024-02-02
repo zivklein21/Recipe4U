@@ -43,7 +43,7 @@ class ProfileFragment : Fragment(),
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                openGallery()
+                GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, null)
             }
         }
 
@@ -100,16 +100,20 @@ class ProfileFragment : Fragment(),
             showEditUsernameDialog()
         }
         userPhotoImageView.setOnClickListener {
-            // Check for READ_EXTERNAL_STORAGE permission
-            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // Explain to the user why the permission is needed (optional)
-                // You may want to show a rationale dialog here
-            } else {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
+            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
         }
 
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GalleryHandler.REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            val selectedImageUri: Uri? = data.data
+            selectedImageUri?.let {
+                userViewModel.updateUserPhoto(it)
+            }
+        }
     }
 
     private fun showEditUsernameDialog() {
