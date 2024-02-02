@@ -1,4 +1,4 @@
-package com.cc.recipe4u.Global
+package com.cc.recipe4u.Objects
 
 import com.cc.recipe4u.DataClass.User
 

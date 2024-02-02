@@ -7,8 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.cc.recipe4u.Global.GlobalVariables
+import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel

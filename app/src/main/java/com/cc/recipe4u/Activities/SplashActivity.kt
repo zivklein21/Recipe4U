@@ -1,16 +1,12 @@
 package com.cc.recipe4u.Activities
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.WindowInsets
-import android.view.WindowManager
 import androidx.activity.viewModels
-import com.cc.recipe4u.AppConfiguration
-import com.cc.recipe4u.Global.GlobalVariables
+import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
