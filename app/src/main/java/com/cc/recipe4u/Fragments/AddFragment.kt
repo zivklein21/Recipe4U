@@ -1,5 +1,6 @@
 package com.cc.recipe4u.Fragments
 
+import GalleryHandler
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.cc.recipe4u.R
 
@@ -35,6 +37,24 @@ class AddFragment : Fragment() {
     private lateinit var buttonCancel: Button
 
     private var imageUri: Uri? = null
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, null)
+            }
+        }
+
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                // Handle the selected image URI
+                val selectedImageUri: Uri? = result.data?.data
+                if (selectedImageUri != null) {
+                    imageViewRecipe.setImageURI(selectedImageUri)
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +83,7 @@ class AddFragment : Fragment() {
 
         // Set onClickListener for the image view to pick an image from the gallery
         imageViewRecipe.setOnClickListener {
-            openGallery()
+            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
         }
 
         // Set onClickListener for the button to add more ingredients dynamically
