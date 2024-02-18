@@ -2,6 +2,7 @@ package com.cc.recipe4u.DataClass
 
 import kotlinx.serialization.Serializable
 
+//test
 @Serializable
 data class User(
     val userId: String = "",
