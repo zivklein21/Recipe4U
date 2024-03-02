@@ -84,10 +84,22 @@ class RecipeViewModel : ViewModel() {
             })
         }
     }
+
+    fun deleteRecipe(recipeId: String, onSuccess: () -> Unit) {
+        FirestoreModel.deleteRecipe(recipeId) {
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.deleteById(recipeId)
+                onSuccess()
+            }
+        }
+    }
     fun removeRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
-        val newRating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
-        newRecipe.rating = newRating
+        if (newRecipe.numberOfRatings == 1) {
+            newRecipe.rating = 0.0f
+        } else {
+            newRecipe.rating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
+        }
         newRecipe.numberOfRatings -= 1
         newRecipe.lastUpdated = System.currentTimeMillis()
         FirestoreModel.updateRecipe(newRecipe) {

@@ -11,6 +11,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
@@ -30,13 +31,13 @@ class ViewFragment : Fragment() {
 
     private lateinit var recipeNameTextView: TextView
     private lateinit var editRecipeButton: ImageButton
+    private lateinit var deleteRecipeButton: ImageButton
     private lateinit var recipeImageView: ImageView
     private lateinit var recipeDescriptionTextView: TextView
     private lateinit var recipeIngredientsTextView: TextView
     private lateinit var recipeProcedureTextView: TextView
     private lateinit var recipeRatingBar: RatingBar
     private lateinit var recipe: Recipe
-    private var numberOfRatings by Delegates.notNull<Int>()
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
@@ -94,6 +95,14 @@ class ViewFragment : Fragment() {
                 editRecipeButton.setOnClickListener {
                     // TODO navigate to edit fragment
                 }
+                deleteRecipeButton.visibility = View.VISIBLE
+                deleteRecipeButton.setOnClickListener {
+                    recipeViewModel.deleteRecipe(this.recipe.recipeId, onSuccess = {
+                        userViewModel.removeUserRecipe(this.recipe.recipeId, onSuccess = {
+                            findNavController().navigate(R.id.navigation_profile)
+                        })
+                    })
+                }
             }
         }
     }
@@ -101,6 +110,7 @@ class ViewFragment : Fragment() {
     private fun getViews(view: View) {
         recipeNameTextView = view.findViewById(R.id.recipeNameTextView)
         editRecipeButton = view.findViewById(R.id.editRecipeButton)
+        deleteRecipeButton = view.findViewById(R.id.deleteRecipeButton)
         recipeImageView = view.findViewById(R.id.recipeImageView)
         recipeDescriptionTextView = view.findViewById(R.id.descriptionTextView)
         recipeIngredientsTextView = view.findViewById(R.id.ingredientsTextView)

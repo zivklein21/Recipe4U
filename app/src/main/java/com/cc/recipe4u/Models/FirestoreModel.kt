@@ -66,6 +66,19 @@ object FirestoreModel {
             }
     }
 
+    fun deleteRecipe(recipeId: String, listener: () -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("recipes")
+            .document(recipeId)
+            .delete()
+            .addOnSuccessListener {
+                listener()
+            }
+            .addOnFailureListener {
+                Log.d("deleteRecipe", "failed: ${it.message}")
+            }
+    }
+
     fun updateRecipe(recipe: Recipe, listener: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
 
