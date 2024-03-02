@@ -2,6 +2,7 @@ package com.cc.recipe4u.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -15,36 +16,45 @@ import com.cc.recipe4u.ViewModels.UserViewModel
 class LoginActivity : AppCompatActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var loginButton: Button
+    private lateinit var signUpTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize UI components
-        val usernameEditText: EditText = findViewById(R.id.et_username)
-        val passwordEditText: EditText = findViewById(R.id.et_password)
-        val loginButton: Button = findViewById(R.id.btn_login)
-        val signUpTextView: TextView = findViewById(R.id.tv_signup)
+        setViews()
+        setButtonListeners()
+        observeUserStatus()
 
-        // Set onClickListener for the login button
+    }
+
+    private fun setViews(){
+        usernameEditText = findViewById(R.id.et_username)
+        passwordEditText = findViewById(R.id.et_password)
+        loginButton = findViewById(R.id.btn_login)
+        signUpTextView = findViewById(R.id.tv_signup)
+    }
+
+    private fun setButtonListeners(){
         loginButton.setOnClickListener {
             val email = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                // Call the signIn method in AuthViewModel
                 authViewModel.signIn(email, password, this)
             }
         }
 
-        // Set onClickListener for the sign-up TextView
         signUpTextView.setOnClickListener {
-            // Navigate to the SignUpActivity or any other activity for sign-up
             startActivity(Intent(this, SignupActivity::class.java))
             finish()
         }
+    }
 
-        // Observe the isUserSignedIn LiveData to determine the authentication state
+    private fun observeUserStatus(){
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
                 val userid = authViewModel.currentUser.value!!.uid
@@ -52,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
                 userViewModel.userLiveData.observe(this) { userdata ->
                     if (userdata != null) {
                         GlobalVariables.currentUser = userdata
-                        // User is signed in, navigate to the MainActivity
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     }

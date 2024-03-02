@@ -15,49 +15,56 @@ import com.cc.recipe4u.ViewModels.UserViewModel
 class SignupActivity : AppCompatActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var emailEditText: EditText
+    private lateinit var signupButton: Button
+    private lateinit var signInTextView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // Initialize UI components
-        val usernameEditText: EditText = findViewById(R.id.et_username_signup)
-        val passwordEditText: EditText = findViewById(R.id.et_password_signup)
-        val emailEditText: EditText = findViewById(R.id.et_email_signup)
-        val signupButton: Button = findViewById(R.id.btn_signup)
-        val signInTextView: TextView = findViewById(R.id.tv_signin)
+        setViews()
+        setButtonListeners()
+        observeUserStatus()
+    }
 
-        // Set onClickListener for the sign-up button
+    private fun setViews() {
+        usernameEditText = findViewById(R.id.et_username_signup)
+        passwordEditText = findViewById(R.id.et_password_signup)
+        emailEditText = findViewById(R.id.et_email_signup)
+        signupButton = findViewById(R.id.btn_signup)
+        signInTextView = findViewById(R.id.tv_signin)
+    }
+
+    private fun setButtonListeners() {
         signupButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val username = usernameEditText.text.toString().trim()
 
-
             if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty()) {
-                // Call the signUp method in AuthViewModel
                 authViewModel.signUp(email, password, this)
-
             }
         }
 
-        // Set onClickListener for the sign-in TextView
         signInTextView.setOnClickListener {
-            // Navigate to the LoginActivity or any other activity for sign-in
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
+    }
 
-        // Observe the isUserSignedIn LiveData to determine the authentication state
+    private fun observeUserStatus() {
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
-
                 val username = usernameEditText.text.toString().trim()
                 val userid = authViewModel.currentUser.value!!.uid
                 val userViewModel = UserViewModel(userid)
+
                 userViewModel.userLiveData.observe(this) { userdata ->
                     userViewModel.updateUserName(username)
                     GlobalVariables.currentUser = userdata
-                    // User is signed in, navigate to the MainActivity
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }
