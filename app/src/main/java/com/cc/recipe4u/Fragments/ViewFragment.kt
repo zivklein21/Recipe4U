@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
+import com.cc.recipe4u.Services.NutritionCalculatorService
 import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
@@ -38,6 +39,7 @@ class ViewFragment : Fragment() {
     private lateinit var recipeProcedureTextView: TextView
     private lateinit var recipeRatingBar: RatingBar
     private lateinit var recipe: Recipe
+    private lateinit var recipeCaloriesTextView: TextView
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
@@ -93,7 +95,7 @@ class ViewFragment : Fragment() {
             if (GlobalVariables.currentUser?.recipeIds?.contains(it.recipeId) == true) {
                 editRecipeButton.visibility = View.VISIBLE
                 editRecipeButton.setOnClickListener {
-                    val action=ViewFragmentDirections.actionNavigationViewToEditFragment(recipe)
+                    val action = ViewFragmentDirections.actionNavigationViewToEditFragment(recipe)
                     findNavController().navigate(action)
                 }
                 deleteRecipeButton.visibility = View.VISIBLE
@@ -105,6 +107,10 @@ class ViewFragment : Fragment() {
                     })
                 }
             }
+            recipeCaloriesTextView.text = getString(
+                R.string.calories,
+                NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
+            )
         }
     }
 
@@ -117,6 +123,7 @@ class ViewFragment : Fragment() {
         recipeIngredientsTextView = view.findViewById(R.id.ingredientsTextView)
         recipeProcedureTextView = view.findViewById(R.id.procedureTextView)
         recipeRatingBar = view.findViewById(R.id.recipeRatingBar)
+        recipeCaloriesTextView = view.findViewById(R.id.caloriesTextView)
     }
 
     private fun setRating() {
@@ -127,16 +134,19 @@ class ViewFragment : Fragment() {
         recipeRatingBar.setOnRatingBarChangeListener { _, rating, _ ->
             this.rating?.let {
                 userViewModel.removeUserRatedRecipe(recipe.recipeId)
-                recipeViewModel.removeRating(recipe, it, onSuccess = {recipeAfterRemove ->
+                recipeViewModel.removeRating(recipe, it, onSuccess = { recipeAfterRemove ->
                     userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
-                    recipeViewModel.addRating(recipeAfterRemove, rating, onSuccess = { recipeAfterAdd ->
-                        this.recipe = recipeAfterAdd
-                        this.rating = rating
-                    })
+                    recipeViewModel.addRating(
+                        recipeAfterRemove,
+                        rating,
+                        onSuccess = { recipeAfterAdd ->
+                            this.recipe = recipeAfterAdd
+                            this.rating = rating
+                        })
                 })
             } ?: run {
                 userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
-                recipeViewModel.addRating(recipe, rating, onSuccess = {recipeAfterAdd ->
+                recipeViewModel.addRating(recipe, rating, onSuccess = { recipeAfterAdd ->
                     this.recipe = recipeAfterAdd
                     this.rating = rating
                 })
