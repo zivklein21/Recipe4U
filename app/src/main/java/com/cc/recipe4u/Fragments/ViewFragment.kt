@@ -93,7 +93,8 @@ class ViewFragment : Fragment() {
             if (GlobalVariables.currentUser?.recipeIds?.contains(it.recipeId) == true) {
                 editRecipeButton.visibility = View.VISIBLE
                 editRecipeButton.setOnClickListener {
-                    // TODO navigate to edit fragment
+                    val action=ViewFragmentDirections.actionNavigationViewToEditFragment(recipe)
+                    findNavController().navigate(action)
                 }
                 deleteRecipeButton.visibility = View.VISIBLE
                 deleteRecipeButton.setOnClickListener {

@@ -79,18 +79,15 @@ class EditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Access the argument value
         recipe = args.recipe!!
 
         recipeNameEditText.setText(recipe.name)
         imageViewRecipe.setImageURI(Uri.parse(recipe.imageUri))
+        imageUri = Uri.parse(recipe.imageUri)
         spinnerCategory.setSelection(localDataRepository.categories.indexOf(recipe.category))
         editTextDescription.setText(recipe.description)
         editTextProcedure.setText(recipe.procedure)
-
-        // Use the argument value as needed
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -186,7 +183,7 @@ class EditFragment : Fragment() {
 
         // Create a Recipe object
         val recipe = Recipe(
-            recipeId = "",
+            recipeId = recipe.recipeId,
             name = recipeName,
             category = category,
             description = description,
@@ -200,7 +197,7 @@ class EditFragment : Fragment() {
         )
 
         // Call the createRecipe method in RecipeViewModel
-        recipeViewModel.createRecipe(recipe) { recipeWithId ->
+        recipeViewModel.updateRecipe(recipe) { recipeWithId ->
             // After a successful creation, update the user's recipeIds
             userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
                 // After a successful update, navigate back to the previous fragment

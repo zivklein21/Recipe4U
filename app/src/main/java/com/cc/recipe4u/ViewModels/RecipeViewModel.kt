@@ -85,6 +85,20 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
+    fun updateRecipe(recipe: Recipe, listener: (Recipe) -> Unit) {
+        val newRecipe = recipe.copy()
+        if (newRecipe.imageUri == "null") {
+            updateRecipeWithoutUploadingImage(newRecipe, listener)
+        } else {
+            FirestoreModel.uploadImage(newRecipe.imageUri.toUri(), onSuccess = { imageUri ->
+                newRecipe.imageUri = imageUri
+                updateRecipeWithoutUploadingImage(newRecipe, listener)
+            }, onFailure = {
+                // Handle failure
+            })
+        }
+    }
+
     fun deleteRecipe(recipeId: String, onSuccess: () -> Unit) {
         FirestoreModel.deleteRecipe(recipeId) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -128,6 +142,15 @@ class RecipeViewModel : ViewModel() {
             CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.insert(recipeWithId)
                 listener(recipeWithId)
+            }
+        }
+    }
+
+    private fun updateRecipeWithoutUploadingImage(recipe: Recipe, listener: (Recipe) -> Unit) {
+        FirestoreModel.updateRecipe(recipe){
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.update(recipe)
+                listener(recipe)
             }
         }
     }

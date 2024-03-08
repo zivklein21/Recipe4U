@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -29,13 +29,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     private var filteredRecipes: List<Recipe> = recipes
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val editButton: Button = itemView.findViewById(R.id.buttonViewEdit)
+        val editButton: ImageButton = itemView.findViewById(R.id.buttonViewEdit)
         val imageViewRecipe: ImageView = itemView.findViewById(R.id.imageViewRecipe)
         val textViewRecipeName: TextView = itemView.findViewById(R.id.textViewRecipeName)
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
         val favoriteCheckBox: CheckBox = itemView.findViewById(R.id.favoriteCheckBox)
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
-        //val buttonView: Button = itemView.findViewById(R.id.buttonView)
     }
 
     init {
