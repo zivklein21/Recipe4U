@@ -30,12 +30,6 @@ import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [EditFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditFragment : Fragment() {
 
     val args: EditFragmentArgs by navArgs()
@@ -86,7 +80,7 @@ class EditFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Access the argument value
-        recipe = args.recipe
+        recipe = args.recipe!!
 
         recipeNameEditText.setText(recipe.name)
         imageViewRecipe.setImageURI(Uri.parse(recipe.imageUri))

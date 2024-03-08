@@ -10,10 +10,6 @@
         android:name="com.cc.recipe4u.Fragments.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/actionNavigationProfileToEditFragment"
-            app:destination="@id/viewFragment" >
-        </action>
     </fragment>
 
     <fragment
@@ -39,19 +35,19 @@
         tools:layout="@layout/fragment_profile" >
         <action
             android:id="@+id/actionNavigationProfileToEditFragment"
-            app:destination="@id/viewFragment" >
-            <argument
-                android:name="recipe"
-                app:argType="Recipe"
-                app:nullable="true"
-                android:defaultValue="@null" />
-        </action>
+            app:destination="@id/editFragment"/>
     </fragment>
     <fragment
         android:id="@+id/editFragment"
         android:name="com.cc.recipe4u.Fragments.EditFragment"
         android:label="Edit Recipe"
-        tools:layout="@layout/fragment_edit" />
+        tools:layout="@layout/fragment_edit" >
+            <argument
+                android:name="recipe"
+                app:argType="com.cc.recipe4u.DataClass.Recipe"
+                app:nullable="true"
+                android:defaultValue="@null" />
+    </fragment>
     <fragment
         android:id="@+id/viewFragment"
         android:name="com.cc.recipe4u.Fragments.ViewFragment"
