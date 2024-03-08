@@ -44,6 +44,8 @@
             android:ellipsize="end" />
 
 
+
+
         <RatingBar
             android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
@@ -68,12 +70,17 @@
 <!--        android:textColor="@android:color/black"-->
 <!--        android:backgroundTint="@color/recipeCardButton" />-->
 
+    <Button
+        android:id="@+id/buttonViewEdit"
+        android:layout_width="61dp"
+        android:layout_height="36dp"
+        android:text="@string/edit" />
+
     <CheckBox
         android:id="@+id/favoriteCheckBox"
-        android:theme="@style/favoriteCheckBoxStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:button="@drawable/favorite_button"
-         />
+        android:theme="@style/favoriteCheckBoxStyle" />
 
-    </LinearLayout>
+</LinearLayout>

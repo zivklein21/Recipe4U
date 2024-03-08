@@ -1,6 +1,5 @@
 package com.cc.recipe4u.Adapters
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +10,11 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.cc.recipe4u.DataClass.Recipe
+import com.cc.recipe4u.Fragments.ProfileFragment
+import com.cc.recipe4u.Fragments.ProfileFragmentDirections
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.UserViewModel
@@ -29,6 +29,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     private var filteredRecipes: List<Recipe> = recipes
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val editButton: Button = itemView.findViewById(R.id.buttonViewEdit)
         val imageViewRecipe: ImageView = itemView.findViewById(R.id.imageViewRecipe)
         val textViewRecipeName: TextView = itemView.findViewById(R.id.textViewRecipeName)
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
@@ -57,6 +58,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
         holder.ratingBar.rating = recipe.rating
 
+        if (fragmentContext is ProfileFragment) {
+            holder.editButton.visibility = View.VISIBLE
+        } else {
+            holder.editButton.visibility = View.GONE
+        }
+
         loadImageToView(holder, recipe)
         setClickListeners(holder, recipe)
     }
@@ -73,6 +80,11 @@ class RecipeAdapter(private var recipes: List<Recipe>,
             } else {
                 userViewModel.removeUserFavoriteRecipeId(recipe.recipeId)
             }
+        }
+
+        holder.editButton.setOnClickListener {
+            val action=ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
+            fragmentContext.findNavController().navigate(action)
         }
     }
 

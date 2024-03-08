@@ -11,8 +11,9 @@
         android:label="Home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_navigation_home_to_viewFragment"
-            app:destination="@id/viewFragment" />
+            android:id="@+id/actionNavigationProfileToEditFragment"
+            app:destination="@id/viewFragment" >
+        </action>
     </fragment>
 
     <fragment
@@ -37,8 +38,14 @@
         android:label="Profile"
         tools:layout="@layout/fragment_profile" >
         <action
-            android:id="@+id/action_navigation_profile_to_editFragment"
-            app:destination="@id/editFragment" />
+            android:id="@+id/actionNavigationProfileToEditFragment"
+            app:destination="@id/viewFragment" >
+            <argument
+                android:name="recipe"
+                app:argType="Recipe"
+                app:nullable="true"
+                android:defaultValue="@null" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/editFragment"
