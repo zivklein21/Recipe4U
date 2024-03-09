@@ -61,7 +61,6 @@ class RecipeAdapter(
                 recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
             }
         }
-        Log.d("recipe Sorter", "init: $recipes")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {

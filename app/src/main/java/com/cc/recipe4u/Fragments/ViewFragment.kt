@@ -11,6 +11,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Objects.GlobalVariables
@@ -20,6 +21,7 @@ import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,7 +61,9 @@ class ViewFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_view, container, false)
 
         getViews(view)
-        loadRecipeData()
+        lifecycleScope.launch {
+            loadRecipeData()
+        }
         setRating()
 
         recipeViewModel.setContextAndDB(requireContext())
@@ -67,7 +71,7 @@ class ViewFragment : Fragment() {
         return view
     }
 
-    private fun loadRecipeData() {
+    private suspend fun loadRecipeData() {
         recipe?.let {
             recipeNameTextView.text = it.name
             recipeDescriptionTextView.text = it.description
@@ -107,10 +111,15 @@ class ViewFragment : Fragment() {
                     })
                 }
             }
-            recipeCaloriesTextView.text = getString(
-                R.string.calories,
-                NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
-            )
+            if(recipe.ingredients.isNotEmpty()){
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,
+                    NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
+                )
+            } else{
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,"0")
+            }
         }
     }
 
