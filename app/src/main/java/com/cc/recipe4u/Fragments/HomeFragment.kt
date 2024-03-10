@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,33 +20,18 @@ import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.google.android.material.tabs.TabLayout
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var categoryTabLayout: TabLayout
     private lateinit var recipeRecyclerView: RecyclerView
     private lateinit var searchTextInput: EditText
     private val recipeViewModel: RecipeViewModel by viewModels()
     private var recipes = listOf<Recipe>()
+    private val sortOptions = arrayOf("Name", "Rating", "Date")
+    private var sortBy: String = sortOptions[0]
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -62,6 +50,7 @@ class HomeFragment : Fragment() {
         initCategoryTabs()
         initRecipeRecyclerView()
         setSearchRecipes()
+        initSpinner(view)
 
         return view
     }
@@ -76,7 +65,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateAdapter() {
-        val category = categoryTabLayout.getTabAt(categoryTabLayout.selectedTabPosition)?.text.toString()
+        val category =
+            categoryTabLayout.getTabAt(categoryTabLayout.selectedTabPosition)?.text.toString()
         val name = searchTextInput.text.toString()
         val filteredRecipes = recipes.filter { recipe ->
             if (category == "All") {
@@ -85,9 +75,10 @@ class HomeFragment : Fragment() {
                 recipe.name.contains(name, ignoreCase = true) && recipe.category == category
             }
         }
-        val adapter = RecipeAdapter(filteredRecipes, this)
+        val adapter = RecipeAdapter(filteredRecipes, this, sortBy)
         recipeRecyclerView.adapter = adapter
     }
+
     private fun initCategoryTabs() {
         categoryTabLayout.addTab(categoryTabLayout.newTab().setText("All"))
 
@@ -114,5 +105,31 @@ class HomeFragment : Fragment() {
         searchTextInput.addTextChangedListener(onTextChanged = { _, _, _, _ ->
             updateAdapter()
         })
+    }
+
+    private fun initSpinner(view: View) {
+        val spinner = view.findViewById<Spinner>(R.id.spinner)
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                sortBy = sortOptions[position]
+                updateAdapter()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                sortBy = "Name"
+                updateAdapter()
+            }
+        }
+
     }
 }

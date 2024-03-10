@@ -11,14 +11,17 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
+import com.cc.recipe4u.Services.NutritionCalculatorService
 import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +41,7 @@ class ViewFragment : Fragment() {
     private lateinit var recipeProcedureTextView: TextView
     private lateinit var recipeRatingBar: RatingBar
     private lateinit var recipe: Recipe
+    private lateinit var recipeCaloriesTextView: TextView
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
@@ -57,7 +61,9 @@ class ViewFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_view, container, false)
 
         getViews(view)
-        loadRecipeData()
+        lifecycleScope.launch {
+            loadRecipeData()
+        }
         setRating()
 
         recipeViewModel.setContextAndDB(requireContext())
@@ -65,7 +71,7 @@ class ViewFragment : Fragment() {
         return view
     }
 
-    private fun loadRecipeData() {
+    private suspend fun loadRecipeData() {
         recipe?.let {
             recipeNameTextView.text = it.name
             recipeDescriptionTextView.text = it.description
@@ -93,7 +99,8 @@ class ViewFragment : Fragment() {
             if (GlobalVariables.currentUser?.recipeIds?.contains(it.recipeId) == true) {
                 editRecipeButton.visibility = View.VISIBLE
                 editRecipeButton.setOnClickListener {
-                    // TODO navigate to edit fragment
+                    val action = ViewFragmentDirections.actionNavigationViewToEditFragment(recipe)
+                    findNavController().navigate(action)
                 }
                 deleteRecipeButton.visibility = View.VISIBLE
                 deleteRecipeButton.setOnClickListener {
@@ -103,6 +110,15 @@ class ViewFragment : Fragment() {
                         })
                     })
                 }
+            }
+            if(recipe.ingredients.isNotEmpty()){
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,
+                    NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
+                )
+            } else{
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,"0")
             }
         }
     }
@@ -116,6 +132,7 @@ class ViewFragment : Fragment() {
         recipeIngredientsTextView = view.findViewById(R.id.ingredientsTextView)
         recipeProcedureTextView = view.findViewById(R.id.procedureTextView)
         recipeRatingBar = view.findViewById(R.id.recipeRatingBar)
+        recipeCaloriesTextView = view.findViewById(R.id.caloriesTextView)
     }
 
     private fun setRating() {
@@ -126,16 +143,19 @@ class ViewFragment : Fragment() {
         recipeRatingBar.setOnRatingBarChangeListener { _, rating, _ ->
             this.rating?.let {
                 userViewModel.removeUserRatedRecipe(recipe.recipeId)
-                recipeViewModel.removeRating(recipe, it, onSuccess = {recipeAfterRemove ->
+                recipeViewModel.removeRating(recipe, it, onSuccess = { recipeAfterRemove ->
                     userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
-                    recipeViewModel.addRating(recipeAfterRemove, rating, onSuccess = { recipeAfterAdd ->
-                        this.recipe = recipeAfterAdd
-                        this.rating = rating
-                    })
+                    recipeViewModel.addRating(
+                        recipeAfterRemove,
+                        rating,
+                        onSuccess = { recipeAfterAdd ->
+                            this.recipe = recipeAfterAdd
+                            this.rating = rating
+                        })
                 })
             } ?: run {
                 userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
-                recipeViewModel.addRating(recipe, rating, onSuccess = {recipeAfterAdd ->
+                recipeViewModel.addRating(recipe, rating, onSuccess = { recipeAfterAdd ->
                     this.recipe = recipeAfterAdd
                     this.rating = rating
                 })
