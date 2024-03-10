@@ -149,7 +149,7 @@ class AddFragment : Fragment() {
 
         // Initialize RecyclerView and Adapter
         recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
-        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients)
+        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients, listOf())
         recyclerViewIngredients.adapter = ingredientAdapter
 
         // Set up text change listener for filtering

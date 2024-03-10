@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cc.recipe4u.R
 
 class IngredientAdapter(
-    private val originalList: List<String>
+    private val originalList: List<String>, private val prevCheckedItems:List<String>
 ) : RecyclerView.Adapter<IngredientAdapter.ViewHolder>(), Filterable {
 
     private var filteredList: List<String> = originalList.toMutableList()
@@ -23,6 +23,10 @@ class IngredientAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ingredient = filteredList[position]
+        for (ingerdient in prevCheckedItems){
+            checkedItems.add(ingerdient)
+        }
+
         holder.bind(ingredient, checkedItems.contains(ingredient))
     }
 
