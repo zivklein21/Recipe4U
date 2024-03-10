@@ -1,7 +1,5 @@
 package com.cc.recipe4u.Services
 
-import android.util.Log
-import com.cc.recipe4u.DataClass.Nutrition
 import com.cc.recipe4u.DataClass.NutritonResponse
 import retrofit2.Response
 import retrofit2.http.GET
