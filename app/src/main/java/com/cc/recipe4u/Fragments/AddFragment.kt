@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
+import com.squareup.picasso.Picasso
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -149,7 +151,7 @@ class AddFragment : Fragment() {
 
         // Initialize RecyclerView and Adapter
         recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
-        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients)
+        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients, listOf())
         recyclerViewIngredients.adapter = ingredientAdapter
 
         // Set up text change listener for filtering

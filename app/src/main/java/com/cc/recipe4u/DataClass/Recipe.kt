@@ -19,7 +19,8 @@ data class Recipe(
     var rating: Float = 0.0f,
     var numberOfRatings: Int = 0,
     var ownerId: String = "",
-    var lastUpdated: Long = 0
+    var lastUpdated: Long = 0,
+    var comments: List<String> = emptyList()
 ) : Parcelable {
 
     @Ignore
@@ -38,6 +39,7 @@ data class Recipe(
         parcel.writeInt(numberOfRatings)
         parcel.writeString(ownerId)
         parcel.writeLong(lastUpdated)
+        parcel.writeStringList(comments)
     }
 
     override fun describeContents(): Int {
@@ -66,6 +68,7 @@ data class Recipe(
         parcel.readFloat(),
         parcel.readInt(),
         parcel.readString() ?: "",
-        parcel.readLong()
+        parcel.readLong(),
+        parcel.createStringArrayList() ?: emptyList()
     )
 }
