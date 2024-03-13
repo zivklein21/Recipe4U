@@ -1,9 +1,12 @@
 package com.cc.recipe4u.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -12,7 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.cc.recipe4u.Dao.RecipeDao
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.cc.recipe4u.Adapters.CommentAdapter
+import com.cc.recipe4u.DataClass.Comment
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
@@ -40,7 +46,9 @@ class ViewFragment : Fragment() {
     private lateinit var recipeRatingBar: RatingBar
     private lateinit var recipe: Recipe
     private lateinit var recipeCaloriesTextView: TextView
-    private lateinit var recipeDao: RecipeDao
+    private lateinit var commentRecyclerView: RecyclerView
+    private lateinit var newCommentButton: Button
+    private lateinit var newCommentText: EditText
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
@@ -66,6 +74,7 @@ class ViewFragment : Fragment() {
                         lifecycleScope.launch {
                             loadRecipeData()
                         }
+                        initCommentsRecyclerView(recipe.comments)
                     }
             }
         }
@@ -73,6 +82,18 @@ class ViewFragment : Fragment() {
         getViews(view)
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setNewCommentButton()
+    }
+
+    private fun initCommentsRecyclerView(comments: List<Comment>) {
+        val adapter = CommentAdapter(comments)
+        commentRecyclerView = requireView().findViewById(R.id.commentsRecyclerView)
+        commentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        commentRecyclerView.adapter = adapter
     }
 
     private suspend fun loadRecipeData() {
@@ -139,6 +160,8 @@ class ViewFragment : Fragment() {
         recipeProcedureTextView = view.findViewById(R.id.procedureTextView)
         recipeRatingBar = view.findViewById(R.id.recipeRatingBar)
         recipeCaloriesTextView = view.findViewById(R.id.caloriesTextView)
+        newCommentButton = view.findViewById(R.id.newCommentButton)
+        newCommentText = view.findViewById(R.id.newCommentText)
     }
 
     private fun setRating() {
@@ -164,6 +187,19 @@ class ViewFragment : Fragment() {
                 recipeViewModel.addRating(recipe, rating, onSuccess = { recipeAfterAdd ->
                     this.recipe = recipeAfterAdd
                     this.rating = rating
+                })
+            }
+        }
+    }
+
+    private fun setNewCommentButton() {
+        newCommentButton.setOnClickListener {
+            val commentText = newCommentText.text.toString()
+            if (commentText.isNotEmpty()) {
+                recipeViewModel.addCommentToRecipe(recipe.recipeId, commentText, listener = {
+                    Log.d("ViewFragment", recipe.toString())
+                    recipe.comments = it.comments
+                    initCommentsRecyclerView(recipe.comments)
                 })
             }
         }

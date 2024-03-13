@@ -2,11 +2,14 @@ package com.cc.recipe4u.Models
 
 import android.net.Uri
 import android.util.Log
+import com.cc.recipe4u.DataClass.Comment
 import com.cc.recipe4u.DataClass.Recipe
+import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.Objects.RecipeLocalTime
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
@@ -89,7 +92,8 @@ object FirestoreModel {
             .set(recipe, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("updateRecipe", "Update successful for recipeId: ${recipe.recipeId}")
-                listener() }
+                listener()
+            }
             .addOnFailureListener { Log.d("updateRecipe", "failed: ${it.message}") }
     }
 
@@ -116,4 +120,56 @@ object FirestoreModel {
             }
     }
 
+    fun addCommentToRecipe(
+        recipeId: String,
+        commentText: String,
+        listener: (Comment) -> Unit
+    ) {
+        val firestore = FirebaseFirestore.getInstance()
+
+        // Generate a unique ID for the new comment
+        val commentId =
+            firestore.collection("recipes").document(recipeId).collection("comments").document().id
+
+        // Create a Comment object
+        val comment = hashMapOf(
+            "comment" to commentText,
+            "timestamp" to System.currentTimeMillis(),
+            "ownerId" to GlobalVariables.currentUser!!.userId,
+            "id" to commentId
+        )
+
+        // Add the comment document to the comments subcollection
+        val commentRef = firestore.collection("recipes").document(recipeId).collection("comments")
+            .document(commentId)
+        commentRef.set(comment)
+            .addOnSuccessListener {
+                // Update successful, retrieve the updated document
+                commentRef.get()
+                    .addOnSuccessListener { documentSnapshot ->
+                        Log.d("Add comment to recipe", documentSnapshot.toString())
+                        val updatedComment = documentSnapshot.toObject(Comment::class.java)
+                        if (updatedComment != null) {
+                            listener(updatedComment)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Add comment to recipe", "Error adding comment", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Add comment to recipe", "Error adding comment", e)
+            }
+
+//        // Add the comment document to the comments subcollection
+//        firestore.collection("recipes").document(recipeId).collection("comments")
+//            .document(commentId).set(comment).addOnSuccessListener {
+//                // Comment added successfully
+//                Log.e("Add comment to recipe", "Comment added successfully")
+//                listener(comment)
+//            }.addOnFailureListener { e ->
+//                // Handle any errors
+//                Log.e("Add comment to recipe", "Error adding comment", e)
+//            }
+    }
 }

@@ -6,4 +6,6 @@
     <string name="edit">Edit</string>
     <string name="editRecipe">Edit</string>
     <string name="calories">Total Calories: %1$s</string>
+    <string name="post">Post</string>
+    <string name="add_comment">Add Comment</string>
 </resources>
