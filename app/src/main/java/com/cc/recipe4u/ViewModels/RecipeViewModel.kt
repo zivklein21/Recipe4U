@@ -53,6 +53,24 @@ class RecipeViewModel : ViewModel() {
         return allRecipes
     }
 
+    private fun initRecipes() {
+        val localLastUpdated = RecipeLocalTime.getLocalLastUpdated(context)
+        FirestoreModel.getAllRecipes(localLastUpdated) { recipes ->
+            var lastUpdated = 0L
+            for (recipe in recipes) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    recipeDao.insert(recipe)
+                }
+                if (lastUpdated < recipe.lastUpdated) {
+                    lastUpdated = recipe.lastUpdated
+                }
+            }
+
+            RecipeLocalTime.setLocalLastUpdated(context, lastUpdated)
+        }
+    }
+
+
     private fun removeDeletedRecipes(recipes: List<Recipe>) {
         FirestoreModel.checkForDeletedRecipes(recipes.map { it.recipeId }) { deletedRecipeIds ->
             CoroutineScope(Dispatchers.IO).launch {
@@ -164,18 +182,18 @@ class RecipeViewModel : ViewModel() {
     }
 
     fun addCommentToRecipe(
-        recipeId: String,
+        recipe: Recipe,
         commentText: String,
         listener: (Recipe) -> Unit
     ) {
-        FirestoreModel.addCommentToRecipe(recipeId, commentText) { comment ->
-            recipeDao.getById(recipeId).value?.let { recipe ->
-                Log.d("RecipeViewModel", recipe.toString())
-                val newComments = recipe.comments.toMutableList()
-                newComments.add(comment)
-                val newRecipe = recipe.copy(comments = newComments)
+        FirestoreModel.addCommentToRecipe(recipe.recipeId, commentText) { comment ->
+            val newRecipe = recipe.copy()
+            val newComments = newRecipe.comments.toMutableList()
+            newComments.add(comment)
+            Log.d("RecipeViewModel", newRecipe.comments.toString())
+            newRecipe.comments = newComments
+            CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.update(newRecipe)
-                Log.d("RecipeViewModel", newRecipe.toString())
                 listener(newRecipe)
             }
         }

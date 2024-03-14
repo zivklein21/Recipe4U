@@ -71,10 +71,13 @@ class ViewFragment : Fragment() {
                     .observe(viewLifecycleOwner) { recipeById ->
                         recipe = recipeById
                         setRating()
-                        lifecycleScope.launch {
+
+                        viewLifecycleOwner.lifecycleScope.launch {
                             loadRecipeData()
                         }
-                        initCommentsRecyclerView(recipe.comments)
+                        view.post {
+                            initCommentsRecyclerView(recipe.comments)
+                        }
                     }
             }
         }
@@ -196,10 +199,13 @@ class ViewFragment : Fragment() {
         newCommentButton.setOnClickListener {
             val commentText = newCommentText.text.toString()
             if (commentText.isNotEmpty()) {
-                recipeViewModel.addCommentToRecipe(recipe.recipeId, commentText, listener = {
+                recipeViewModel.addCommentToRecipe(recipe, commentText, listener = {
                     Log.d("ViewFragment", recipe.toString())
                     recipe.comments = it.comments
-                    initCommentsRecyclerView(recipe.comments)
+                    val view = requireView()
+                    view.post {
+                        initCommentsRecyclerView(recipe.comments)
+                    }
                 })
             }
         }
