@@ -10,16 +10,17 @@ import com.cc.recipe4u.DataClass.Comment
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.UsersViewModel
 import com.squareup.picasso.Picasso
-import java.text.DateFormat.getDateInstance
 import java.text.SimpleDateFormat
-import java.util.*
-class CommentAdapter(private val comments:List<Comment>):
+import java.util.Calendar
+import java.util.Locale
+
+class CommentAdapter(private val comments: List<Comment>) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userName: TextView = itemView.findViewById(com.cc.recipe4u.R.id.userName)
         val commentText: TextView = itemView.findViewById(com.cc.recipe4u.R.id.commentText)
-        val commentTime:TextView = itemView.findViewById(com.cc.recipe4u.R.id.commentTime)
+        val commentTime: TextView = itemView.findViewById(com.cc.recipe4u.R.id.commentTime)
         val userImageView: ImageView = itemView.findViewById(com.cc.recipe4u.R.id.userImageView)
     }
 
@@ -41,7 +42,7 @@ class CommentAdapter(private val comments:List<Comment>):
 
         UsersViewModel().getUserById(comment.ownerId) { user ->
             holder.userName.text = user.name
-            if (user.photoUrl != "null") {
+            if (user.photoUrl.isNotEmpty() && user.photoUrl.isNotBlank() && user.photoUrl != "null") {
                 Picasso.get()
                     .load(user.photoUrl)
                     .placeholder(R.drawable.progress_animation)
@@ -52,7 +53,7 @@ class CommentAdapter(private val comments:List<Comment>):
         }
     }
 
-    fun formatDate(milliseconds: Long): String {
+    private fun formatDate(milliseconds: Long): String {
         val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = milliseconds

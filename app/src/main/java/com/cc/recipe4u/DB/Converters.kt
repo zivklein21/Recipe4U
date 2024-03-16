@@ -2,6 +2,7 @@ package com.cc.recipe4u.DB
 
 import androidx.room.TypeConverter
 import com.cc.recipe4u.DataClass.Comment
+import com.cc.recipe4u.DataClass.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -26,5 +27,15 @@ class Converters {
     @TypeConverter
     fun toCommentList(commentsString: String?): List<Comment>? {
         return Gson().fromJson(commentsString, object : TypeToken<List<Comment>>() {}.type)
+    }
+
+    @TypeConverter
+    fun fromUser(user: User): String {
+        return Gson().toJson(user)
+    }
+
+    @TypeConverter
+    fun toUser(json: String): User {
+        return Gson().fromJson(json, User::class.java)
     }
 }
