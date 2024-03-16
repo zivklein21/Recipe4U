@@ -35,12 +35,14 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
-    fun getAllRecipes(): LiveData<List<Recipe>> {
+    fun getAllRecipes(coroutineScope: CoroutineScope): LiveData<List<Recipe>> {
         val localLastUpdated = RecipeLocalTime.getLocalLastUpdated(context)
-        FirestoreModel.getAllRecipes(localLastUpdated) { recipes ->
+        FirestoreModel.getAllRecipes(localLastUpdated, coroutineScope) { recipes ->
+            Log.d("RecipeViewModel", "Fetched ${recipes.size} recipes")
             var lastUpdated = 0L
             for (recipe in recipes) {
                 CoroutineScope(Dispatchers.IO).launch {
+                    Log.d("RecipeViewModel", recipe.toString())
                     recipeDao.insert(recipe)
                 }
                 if (lastUpdated < recipe.lastUpdated) {
@@ -52,24 +54,6 @@ class RecipeViewModel : ViewModel() {
         }
         return allRecipes
     }
-
-    private fun initRecipes() {
-        val localLastUpdated = RecipeLocalTime.getLocalLastUpdated(context)
-        FirestoreModel.getAllRecipes(localLastUpdated) { recipes ->
-            var lastUpdated = 0L
-            for (recipe in recipes) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    recipeDao.insert(recipe)
-                }
-                if (lastUpdated < recipe.lastUpdated) {
-                    lastUpdated = recipe.lastUpdated
-                }
-            }
-
-            RecipeLocalTime.setLocalLastUpdated(context, lastUpdated)
-        }
-    }
-
 
     private fun removeDeletedRecipes(recipes: List<Recipe>) {
         FirestoreModel.checkForDeletedRecipes(recipes.map { it.recipeId }) { deletedRecipeIds ->

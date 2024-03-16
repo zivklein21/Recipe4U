@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cc.recipe4u.Adapters.RecipeAdapter
@@ -14,11 +15,6 @@ import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.AuthViewModel
 import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -31,7 +27,6 @@ class FavoritesFragment : Fragment() {
     private lateinit var recipeRecyclerView: RecyclerView
 
     private val recipeViewModel: RecipeViewModel by viewModels()
-    private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +50,7 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun initRecipeRecyclerView() {
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             if (recipes.isNotEmpty()) {
                 val filteredRecipes = recipes.filter { GlobalVariables.currentUser?.favoriteRecipeIds!!.contains(it.recipeId) }
                 val adapter = RecipeAdapter(filteredRecipes, this)

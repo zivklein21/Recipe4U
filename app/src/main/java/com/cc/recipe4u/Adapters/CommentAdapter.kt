@@ -10,7 +10,9 @@ import com.cc.recipe4u.DataClass.Comment
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.UsersViewModel
 import com.squareup.picasso.Picasso
-
+import java.text.DateFormat.getDateInstance
+import java.text.SimpleDateFormat
+import java.util.*
 class CommentAdapter(private val comments:List<Comment>):
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -33,9 +35,8 @@ class CommentAdapter(private val comments:List<Comment>):
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = comments[position]
-
         // Bind data to views
-        holder.commentTime.text = comment.timestamp.toString()
+        holder.commentTime.text = formatDate(comment.timestamp)
         holder.commentText.text = comment.comment
 
         UsersViewModel().getUserById(comment.ownerId) { user ->
@@ -49,6 +50,13 @@ class CommentAdapter(private val comments:List<Comment>):
                 holder.userImageView.setImageResource(R.drawable.baseline_person_24)
             }
         }
+    }
+
+    fun formatDate(milliseconds: Long): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+        return dateFormat.format(calendar.time)
     }
 }
 
