@@ -31,12 +31,10 @@ import kotlinx.coroutines.launch
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val RECIPE_PARAM = "recipe"
-private const val RATING = "rating"
 
 class ViewFragment : Fragment() {
 
     private var rating: Float? = null
-
     private lateinit var recipeNameTextView: TextView
     private lateinit var editRecipeButton: ImageButton
     private lateinit var deleteRecipeButton: ImageButton
@@ -56,10 +54,6 @@ class ViewFragment : Fragment() {
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -114,10 +108,10 @@ class ViewFragment : Fragment() {
             }
             recipeProcedureTextView.text = it.procedure
 
+            setUserInfo()
             setActionButtons()
             setRecipeImage()
             setCalories()
-            setUserData()
         }
     }
 
@@ -182,7 +176,7 @@ class ViewFragment : Fragment() {
         }
     }
 
-    private fun setUserData() {
+    private fun setUserInfo() {
         if (recipe.owner.userId != "") {
             userNameTextView.text = recipe.owner.name
             val photoUrl: String = recipe.owner.photoUrl

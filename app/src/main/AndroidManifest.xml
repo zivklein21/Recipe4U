@@ -20,10 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Recipe4U"
         tools:targetApi="31">
-        <service
-            android:name=".Services.NutritionCalculatorService"
-            android:enabled="true"
-            android:exported="true"></service>
 
         <activity
             android:name=".Activities.SplashActivity"
@@ -37,7 +33,7 @@
         </activity>
         <activity android:name=".Activities.SignupActivity" />
         <activity android:name=".Activities.LoginActivity" />
-        <activity android:name=".Activities.MainActivity" />
+        <activity android:name=".Activities.MainActivity"/>
     </application>
 
 </manifest>

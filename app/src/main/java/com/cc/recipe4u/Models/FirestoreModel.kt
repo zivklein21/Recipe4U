@@ -60,7 +60,6 @@ object FirestoreModel {
 
                     recipes.add(recipe)
                 }
-                Log.d("getAllRecipes", "Fetched ${recipes.size} recipes")
                 listener(recipes)
             } catch (e: Exception) {
                 Log.e("getAllRecipes", "Error fetching recipes", e)
