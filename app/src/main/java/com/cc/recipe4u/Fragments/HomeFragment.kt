@@ -1,7 +1,6 @@
 package com.cc.recipe4u.Fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,9 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cc.recipe4u.Adapters.RecipeAdapter
@@ -29,10 +30,6 @@ class HomeFragment : Fragment() {
     private var recipes = listOf<Recipe>()
     private val sortOptions = arrayOf("Name", "Rating", "Date")
     private var sortBy: String = sortOptions[0]
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +53,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initRecipeRecyclerView() {
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             if (recipes.isNotEmpty()) {
                 this.recipes = recipes
                 updateAdapter()
@@ -130,6 +127,5 @@ class HomeFragment : Fragment() {
                 updateAdapter()
             }
         }
-
     }
 }

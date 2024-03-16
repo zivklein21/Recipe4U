@@ -1,5 +1,6 @@
 package com.cc.recipe4u.Fragments
 
+import GalleryHandler
 import android.app.Activity
 import android.content.SharedPreferences
 import android.net.Uri
@@ -10,9 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cc.recipe4u.Adapters.RecipeAdapter
@@ -25,17 +27,9 @@ import com.cc.recipe4u.ViewModels.RecipeViewModel
 import com.cc.recipe4u.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 1
-private const val PICK_IMAGE_REQUEST_CODE = 2
-
 class ProfileFragment : Fragment(),
     EditDisplayNameDialogFragment.EditUsernameDialogListener {
 
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recipeRecyclerView: RecyclerView
 
     private val recipeViewModel: RecipeViewModel by viewModels()
@@ -61,14 +55,6 @@ class ProfileFragment : Fragment(),
                 }
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,9 +83,14 @@ class ProfileFragment : Fragment(),
             showEditUsernameDialog()
         }
         userPhotoImageView.setOnClickListener {
-            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
+            GalleryHandler.getPhotoUriFromGallery(
+                requireActivity(),
+                pickImageLauncher,
+                requestPermissionLauncher
+            )
         }
     }
+
     private fun observeUser(view: View) {
         val emailTextView: TextView? = view.findViewById(R.id.emailTextView)
 
@@ -118,6 +109,7 @@ class ProfileFragment : Fragment(),
             }
         }
     }
+
     private fun showEditUsernameDialog() {
         val dialogFragment = EditDisplayNameDialogFragment()
         dialogFragment.show(childFragmentManager, "EditUsernameDialogFragment")
@@ -140,7 +132,7 @@ class ProfileFragment : Fragment(),
                 .load(url)
                 .placeholder(R.drawable.progress_animation)
                 .error(R.drawable.baseline_add_photo_alternate_24) // Error image if loading fails
-                .into(userPhotoImageView, object: com.squareup.picasso.Callback {
+                .into(userPhotoImageView, object : com.squareup.picasso.Callback {
                     override fun onSuccess() {
                         userPhotoImageView?.scaleType = ImageView.ScaleType.CENTER_CROP
                     }
@@ -151,14 +143,15 @@ class ProfileFragment : Fragment(),
                 })
         } ?: run {
             // Load default placeholder image if user photo is not available
-            userPhotoImageView?.setImageResource(R.drawable.baseline_add_photo_alternate_24)
+            userPhotoImageView?.setImageResource(R.drawable.baseline_person_24)
         }
     }
 
     private fun initRecipeRecyclerView() {
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             if (recipes.isNotEmpty()) {
-                val filteredRecipes = recipes.filter { it.ownerId == GlobalVariables.currentUser?.userId }
+                val filteredRecipes =
+                    recipes.filter { it.ownerId == GlobalVariables.currentUser?.userId }
                 val adapter = RecipeAdapter(filteredRecipes, this)
                 recipeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recipeRecyclerView.adapter = adapter

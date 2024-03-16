@@ -1,22 +1,18 @@
 package com.cc.recipe4u.Fragments
 
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.DataClass.User
 import com.cc.recipe4u.InfoWindowsForMap.CustomInfoWindow
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.RecipeViewModel
-import com.cc.recipe4u.ViewModels.UserViewModel
 import com.cc.recipe4u.ViewModels.UsersViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -24,13 +20,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class MapFragment : Fragment() {
-
-    private var param1: String? = null
-    private var param2: String? = null
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val usersViewModel: UsersViewModel by viewModels()
     private var recipes: List<Recipe> = listOf()
@@ -38,14 +28,6 @@ class MapFragment : Fragment() {
     private var gotRecipes = false
     private var gotUsers = false
     private lateinit var mapView: MapView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,7 +66,7 @@ class MapFragment : Fragment() {
     private fun observeUsersAndRecipes() {
         recipeViewModel.setContextAndDB(requireContext())
 
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             this.recipes = recipes
             gotRecipes = true
             setUsersMarkers()

@@ -1,9 +1,9 @@
 package com.cc.recipe4u.ViewModels
 
 import android.content.Context
+import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.cc.recipe4u.DB.RecipeDatabase
@@ -11,7 +11,6 @@ import com.cc.recipe4u.Dao.RecipeDao
 import com.cc.recipe4u.DataClass.Recipe
 import com.cc.recipe4u.Models.FirestoreModel
 import com.cc.recipe4u.Objects.RecipeLocalTime
-import com.google.android.gms.tasks.OnSuccessListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,9 +34,10 @@ class RecipeViewModel : ViewModel() {
             }
         }
     }
-    fun getAllRecipes(): LiveData<List<Recipe>> {
+
+    fun getAllRecipes(coroutineScope: CoroutineScope): LiveData<List<Recipe>> {
         val localLastUpdated = RecipeLocalTime.getLocalLastUpdated(context)
-        FirestoreModel.getAllRecipes(localLastUpdated) { recipes ->
+        FirestoreModel.getAllRecipes(localLastUpdated, coroutineScope) { recipes ->
             var lastUpdated = 0L
             for (recipe in recipes) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -111,12 +111,14 @@ class RecipeViewModel : ViewModel() {
             }
         }
     }
+
     fun removeRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
         if (newRecipe.numberOfRatings == 1) {
             newRecipe.rating = 0.0f
         } else {
-            newRecipe.rating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
+            newRecipe.rating =
+                ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
         }
         newRecipe.numberOfRatings -= 1
         newRecipe.lastUpdated = System.currentTimeMillis()
@@ -130,7 +132,8 @@ class RecipeViewModel : ViewModel() {
 
     fun addRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
-        val newRating = ((newRecipe.rating * newRecipe.numberOfRatings) + rating) / (newRecipe.numberOfRatings + 1)
+        val newRating =
+            ((newRecipe.rating * newRecipe.numberOfRatings) + rating) / (newRecipe.numberOfRatings + 1)
         newRecipe.rating = newRating
         newRecipe.numberOfRatings += 1
         newRecipe.lastUpdated = System.currentTimeMillis()
@@ -141,8 +144,9 @@ class RecipeViewModel : ViewModel() {
             }
         }
     }
+
     private fun createRecipeWithoutUploadingImage(recipe: Recipe, listener: (Recipe) -> Unit) {
-        FirestoreModel.createRecipe(recipe){recipeWithId ->
+        FirestoreModel.createRecipe(recipe) { recipeWithId ->
             CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.insert(recipeWithId)
                 listener(recipeWithId)
@@ -151,10 +155,27 @@ class RecipeViewModel : ViewModel() {
     }
 
     private fun updateRecipeWithoutUploadingImage(recipe: Recipe, listener: (Recipe) -> Unit) {
-        FirestoreModel.updateRecipe(recipe){
+        FirestoreModel.updateRecipe(recipe) {
             CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.update(recipe)
                 listener(recipe)
+            }
+        }
+    }
+
+    fun addCommentToRecipe(
+        recipe: Recipe,
+        commentText: String,
+        listener: (Recipe) -> Unit
+    ) {
+        FirestoreModel.addCommentToRecipe(recipe.recipeId, commentText) { comment ->
+            val newRecipe = recipe.copy()
+            val newComments = newRecipe.comments.toMutableList()
+            newComments.add(comment)
+            newRecipe.comments = newComments
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.update(newRecipe)
+                listener(newRecipe)
             }
         }
     }

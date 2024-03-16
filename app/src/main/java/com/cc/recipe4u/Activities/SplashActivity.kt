@@ -1,11 +1,11 @@
 package com.cc.recipe4u.Activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.cc.recipe4u.Objects.GlobalVariables
 import com.cc.recipe4u.R
 import com.cc.recipe4u.ViewModels.AuthViewModel
@@ -23,6 +23,7 @@ class SplashActivity : AppCompatActivity() {
             checkUserStatus()
         }, 2500)
     }
+
     private fun checkUserStatus() {
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {

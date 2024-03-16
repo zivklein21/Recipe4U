@@ -1,6 +1,6 @@
 package com.cc.recipe4u.DataClass
 
-data class Nutrition (
+data class Nutrition(
     var name: String,
     var calories: Double,
     var serving_size_g: Double,

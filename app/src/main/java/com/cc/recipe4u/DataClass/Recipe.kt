@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 @Entity(tableName = "recipes")
 data class Recipe(
@@ -20,7 +19,8 @@ data class Recipe(
     var numberOfRatings: Int = 0,
     var ownerId: String = "",
     var lastUpdated: Long = 0,
-    var comments: List<String> = emptyList()
+    var comments: List<Comment> = emptyList(),
+    var owner: User = User(),
 ) : Parcelable {
 
     @Ignore
@@ -39,7 +39,7 @@ data class Recipe(
         parcel.writeInt(numberOfRatings)
         parcel.writeString(ownerId)
         parcel.writeLong(lastUpdated)
-        parcel.writeStringList(comments)
+        parcel.writeStringList(comments.map { it.id })
     }
 
     override fun describeContents(): Int {
@@ -69,6 +69,6 @@ data class Recipe(
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readLong(),
-        parcel.createStringArrayList() ?: emptyList()
+//        parcel.readParcelableList()
     )
 }
