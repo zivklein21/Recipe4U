@@ -77,7 +77,7 @@ class AddEditFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recipe = args.recipe
-        if (recipe?.recipeId != "" && recipe?.recipeId != "null") {
+        if (recipe != null) {
             recipeNameEditText.setText(recipe!!.name)
             imageViewRecipe.scaleType = ImageView.ScaleType.CENTER_CROP
             spinnerCategory.setSelection(localDataRepository.categories.indexOf(recipe!!.category))
@@ -98,7 +98,7 @@ class AddEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_edit, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
 
         recipeViewModel.setContextAndDB(requireContext())
         navController = findNavController()

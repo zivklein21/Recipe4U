@@ -9,14 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="com.cc.recipe4u.Fragments.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" >
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_add"
-        android:name="com.cc.recipe4u.Fragments.AddFragment"
-        android:label="Add"
-        tools:layout="@layout/fragment_add" />
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_map"
@@ -28,7 +21,7 @@
         android:id="@+id/navigation_favorites"
         android:name="com.cc.recipe4u.Fragments.FavoritesFragment"
         android:label="Favorites"
-        tools:layout="@layout/fragment_favorites" >
+        tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_navigation_favorites_to_viewFragment"
             app:destination="@id/viewFragment" />
@@ -38,48 +31,32 @@
         android:id="@+id/navigation_profile"
         android:name="com.cc.recipe4u.Fragments.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" >
-<!--        <action-->
-<!--            android:id="@+id/actionNavigationProfileToEditFragment"-->
-<!--            app:destination="@id/editFragment"/>-->
+        tools:layout="@layout/fragment_profile">
+
         <action
-        android:id="@+id/actionNavigationProfileToAddEditFragment"
-        app:destination="@id/addEditFragment"/>
+            android:id="@+id/actionNavigationProfileToAddEditFragment"
+            app:destination="@id/navigation_add" />
     </fragment>
-<!--    <fragment-->
-<!--        android:id="@+id/editFragment"-->
-<!--        android:name="com.cc.recipe4u.Fragments.EditFragment"-->
-<!--        android:label="Edit Recipe"-->
-<!--        tools:layout="@layout/fragment_edit" >-->
-<!--            <argument-->
-<!--                android:name="recipe"-->
-<!--                app:argType="com.cc.recipe4u.DataClass.Recipe"-->
-<!--                app:nullable="true"-->
-<!--                android:defaultValue="@null" />-->
-<!--    </fragment>-->
 
     <fragment
-        android:id="@+id/addEditFragment"
+        android:id="@+id/navigation_add"
         android:name="com.cc.recipe4u.Fragments.AddEditFragment"
         android:label="Edit Recipe"
-        tools:layout="@layout/fragment_add_edit" >
+        tools:layout="@layout/fragment_add_edit">
         <argument
             android:name="recipe"
+            android:defaultValue="@null"
             app:argType="com.cc.recipe4u.DataClass.Recipe"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/viewFragment"
         android:name="com.cc.recipe4u.Fragments.ViewFragment"
         android:label="View Recipe"
-        tools:layout="@layout/fragment_view" >
-<!--        <action-->
-<!--            android:id="@+id/actionNavigationViewToEditFragment"-->
-<!--            app:destination="@id/editFragment"/>-->
+        tools:layout="@layout/fragment_view">
         <action
             android:id="@+id/actionNavigationViewToEditFragment"
-            app:destination="@id/addEditFragment"/>
+            app:destination="@id/navigation_add" />
     </fragment>
 
 </navigation>
