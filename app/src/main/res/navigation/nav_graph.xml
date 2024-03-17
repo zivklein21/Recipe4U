@@ -39,29 +39,47 @@
         android:name="com.cc.recipe4u.Fragments.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" >
+<!--        <action-->
+<!--            android:id="@+id/actionNavigationProfileToEditFragment"-->
+<!--            app:destination="@id/editFragment"/>-->
         <action
-            android:id="@+id/actionNavigationProfileToEditFragment"
-            app:destination="@id/editFragment"/>
+        android:id="@+id/actionNavigationProfileToAddEditFragment"
+        app:destination="@id/addEditFragment"/>
     </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/editFragment"-->
+<!--        android:name="com.cc.recipe4u.Fragments.EditFragment"-->
+<!--        android:label="Edit Recipe"-->
+<!--        tools:layout="@layout/fragment_edit" >-->
+<!--            <argument-->
+<!--                android:name="recipe"-->
+<!--                app:argType="com.cc.recipe4u.DataClass.Recipe"-->
+<!--                app:nullable="true"-->
+<!--                android:defaultValue="@null" />-->
+<!--    </fragment>-->
+
     <fragment
-        android:id="@+id/editFragment"
-        android:name="com.cc.recipe4u.Fragments.EditFragment"
+        android:id="@+id/addEditFragment"
+        android:name="com.cc.recipe4u.Fragments.AddEditFragment"
         android:label="Edit Recipe"
-        tools:layout="@layout/fragment_edit" >
-            <argument
-                android:name="recipe"
-                app:argType="com.cc.recipe4u.DataClass.Recipe"
-                app:nullable="true"
-                android:defaultValue="@null" />
+        tools:layout="@layout/fragment_add_edit" >
+        <argument
+            android:name="recipe"
+            app:argType="com.cc.recipe4u.DataClass.Recipe"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/viewFragment"
         android:name="com.cc.recipe4u.Fragments.ViewFragment"
         android:label="View Recipe"
         tools:layout="@layout/fragment_view" >
+<!--        <action-->
+<!--            android:id="@+id/actionNavigationViewToEditFragment"-->
+<!--            app:destination="@id/editFragment"/>-->
         <action
             android:id="@+id/actionNavigationViewToEditFragment"
-            app:destination="@id/editFragment"/>
+            app:destination="@id/addEditFragment"/>
     </fragment>
 
 </navigation>
