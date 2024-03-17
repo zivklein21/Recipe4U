@@ -48,8 +48,8 @@
             android:layout_height="wrap_content"
             android:theme="@style/RatingBarStyle"
             android:clickable="false"
-            android:scaleX="0.75"
-            android:scaleY="0.75"
+            android:scaleX="0.70"
+            android:scaleY="0.70"
             android:isIndicator="true"
             android:layout_marginStart="-33dp"
             android:layout_marginTop="-8dp"
@@ -64,12 +64,13 @@
 <!--        android:text="@string/edit" />-->
     <ImageButton
         android:id="@+id/buttonViewEdit"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:background="@android:color/transparent"
         android:src="@drawable/baseline_edit_24"
         android:visibility="gone"
         tools:visibility="visible"
+        android:layout_marginRight="10dp"
         android:contentDescription="@string/editRecipe"
         />
 
