@@ -25,9 +25,9 @@ class CommentAdapter(private val comments: List<Comment>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-        val view = LayoutInflater.from(parent.context)
+        val commentView = LayoutInflater.from(parent.context)
             .inflate(com.cc.recipe4u.R.layout.row_comments, parent, false)
-        return CommentViewHolder(view)
+        return CommentViewHolder(commentView)
     }
 
     override fun getItemCount(): Int {
