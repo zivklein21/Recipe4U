@@ -25,10 +25,7 @@ object GalleryHandler {
     }
 
     private fun checkPermissions(activity: FragmentActivity): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(
-            activity,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
+        val readPermission = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE)
         return readPermission == PackageManager.PERMISSION_GRANTED
     }
 
